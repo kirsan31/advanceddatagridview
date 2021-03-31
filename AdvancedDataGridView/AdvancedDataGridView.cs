@@ -565,9 +565,16 @@ namespace Zuby.ADGV
             //sort datasource
             if (sortEventArgs.Cancel == false)
             {
-                BindingSource datasource = this.DataSource as BindingSource;
-                if (datasource != null)
-                    datasource.Sort = sortEventArgs.SortString;
+                if (this.DataSource is BindingSource bindingSource)
+                {
+                    bindingSource.Sort = sortEventArgs.SortString;
+                }
+                else
+                {
+                    var dataView = (this.DataSource as System.Data.DataView) ?? (this.DataSource as System.Data.DataTable)?.DefaultView;
+                    if (dataView != null)
+                        dataView.Sort = sortEventArgs.SortString;
+                }
             }
         }
 
@@ -714,12 +721,19 @@ namespace Zuby.ADGV
             };
             if (FilterStringChanged != null)
                 FilterStringChanged.Invoke(this, filterEventArgs);
-            //sort datasource
+            //filter datasource
             if (filterEventArgs.Cancel == false)
             {
-                BindingSource datasource = this.DataSource as BindingSource;
-                if (datasource != null)
+                if (this.DataSource is BindingSource datasource)
+                {
                     datasource.Filter = filterEventArgs.FilterString;
+                }
+                else
+                {
+                    var dataView = (this.DataSource as System.Data.DataView) ?? (this.DataSource as System.Data.DataTable)?.DefaultView;
+                    if (dataView != null)
+                        dataView.RowFilter = filterEventArgs.FilterString;
+                }
             }
         }
 
