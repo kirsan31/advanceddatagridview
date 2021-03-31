@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 namespace Zuby.ADGV
@@ -251,7 +250,11 @@ namespace Zuby.ADGV
                 try
                 {
                     string jsontext = File.ReadAllText(filename);
-                    Dictionary<string, string> translations = new JavaScriptSerializer().Deserialize<Dictionary<string, string>>(jsontext);
+#if NET40
+                    Dictionary<string, string> translations = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Dictionary<string, string>>(jsontext);
+#else
+                    Dictionary<string, string> translations = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsontext);
+#endif
                     foreach (KeyValuePair<string, string> translation in translations)
                     {
                         if (!ret.ContainsKey(translation.Key) && Translations.ContainsKey(translation.Key))
