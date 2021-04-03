@@ -64,6 +64,7 @@ namespace Zuby.ADGV
         private TreeNodeItemSelector[] _restoreNodes = new TreeNodeItemSelector[] { };
         private bool _checkTextFilterSetByText = false;
         private bool _checkTextFilterRemoveNodesOnSearch = true;
+        private static ImageList _checkListStateImages;
 
         #endregion
 
@@ -199,12 +200,15 @@ namespace Zuby.ADGV
         /// Get all images for checkList
         /// </summary>
         /// <returns></returns>
-        private ImageList GetCheckListStateImages()
+        private static ImageList GetCheckListStateImages()
         {
-            ImageList images = new System.Windows.Forms.ImageList();
-            Bitmap unCheckImg = new Bitmap(16, 16);
-            Bitmap checkImg = new Bitmap(16, 16);
-            Bitmap mixedImg = new Bitmap(16, 16);
+            if (_checkListStateImages != null)
+                return _checkListStateImages;
+
+            _checkListStateImages = new System.Windows.Forms.ImageList();
+            Bitmap unCheckImg;
+            Bitmap checkImg;
+            Bitmap mixedImg;
 
             using (Bitmap img = new Bitmap(16, 16))
             {
@@ -219,11 +223,11 @@ namespace Zuby.ADGV
                 }
             }
 
-            images.Images.Add("uncheck", unCheckImg);
-            images.Images.Add("check", checkImg);
-            images.Images.Add("mixed", mixedImg);
+            _checkListStateImages.Images.Add("uncheck", unCheckImg);
+            _checkListStateImages.Images.Add("check", checkImg);
+            _checkListStateImages.Images.Add("mixed", mixedImg);
 
-            return images;
+            return _checkListStateImages;
         }
 
         #endregion
@@ -1408,49 +1412,50 @@ namespace Zuby.ADGV
                 return;
 
             //open a new Custom filter window
-            FormCustomFilter flt = new FormCustomFilter(DataType, IsFilterDateAndTimeEnabled);
-
-            if (flt.ShowDialog() == DialogResult.OK)
+            using (FormCustomFilter flt = new FormCustomFilter(DataType, IsFilterDateAndTimeEnabled))
             {
-                //add the new Filter presets
-
-                string filterString = flt.FilterString;
-                string viewFilterString = flt.FilterStringDescription;
-
-                int index = -1;
-
-                for (int i = 2; i < customFilterLastFiltersListMenuItem.DropDownItems.Count; i++)
+                if (flt.ShowDialog() == DialogResult.OK)
                 {
-                    if (customFilterLastFiltersListMenuItem.DropDown.Items[i].Available)
+                    //add the new Filter presets
+
+                    string filterString = flt.FilterString;
+                    string viewFilterString = flt.FilterStringDescription;
+
+                    int index = -1;
+
+                    for (int i = 2; i < customFilterLastFiltersListMenuItem.DropDownItems.Count; i++)
                     {
-                        if (customFilterLastFiltersListMenuItem.DropDownItems[i].Text == viewFilterString && customFilterLastFiltersListMenuItem.DropDownItems[i].Tag.ToString() == filterString)
+                        if (customFilterLastFiltersListMenuItem.DropDown.Items[i].Available)
                         {
-                            index = i;
+                            if (customFilterLastFiltersListMenuItem.DropDownItems[i].Text == viewFilterString && customFilterLastFiltersListMenuItem.DropDownItems[i].Tag.ToString() == filterString)
+                            {
+                                index = i;
+                                break;
+                            }
+                        }
+                        else
                             break;
-                        }
                     }
-                    else
-                        break;
-                }
 
-                if (index < 2)
-                {
-                    for (int i = customFilterLastFiltersListMenuItem.DropDownItems.Count - 2; i > 1; i--)
+                    if (index < 2)
                     {
-                        if (customFilterLastFiltersListMenuItem.DropDownItems[i].Available)
+                        for (int i = customFilterLastFiltersListMenuItem.DropDownItems.Count - 2; i > 1; i--)
                         {
-                            customFilterLastFiltersListMenuItem.DropDownItems[i + 1].Text = customFilterLastFiltersListMenuItem.DropDownItems[i].Text;
-                            customFilterLastFiltersListMenuItem.DropDownItems[i + 1].Tag = customFilterLastFiltersListMenuItem.DropDownItems[i].Tag;
+                            if (customFilterLastFiltersListMenuItem.DropDownItems[i].Available)
+                            {
+                                customFilterLastFiltersListMenuItem.DropDownItems[i + 1].Text = customFilterLastFiltersListMenuItem.DropDownItems[i].Text;
+                                customFilterLastFiltersListMenuItem.DropDownItems[i + 1].Tag = customFilterLastFiltersListMenuItem.DropDownItems[i].Tag;
+                            }
                         }
+                        index = 2;
+
+                        customFilterLastFiltersListMenuItem.DropDownItems[2].Text = viewFilterString;
+                        customFilterLastFiltersListMenuItem.DropDownItems[2].Tag = filterString;
                     }
-                    index = 2;
 
-                    customFilterLastFiltersListMenuItem.DropDownItems[2].Text = viewFilterString;
-                    customFilterLastFiltersListMenuItem.DropDownItems[2].Tag = filterString;
+                    //set the Custom Filter
+                    SetCustomFilter(index);
                 }
-
-                //set the Custom Filter
-                SetCustomFilter(index);
             }
         }
 
