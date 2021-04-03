@@ -19,6 +19,7 @@ namespace AdvancedDataGridViewSample
 
         private bool _testtranslations = false;
         private bool _testtranslationsFromFile = false;
+        private bool _closing;
 
         private static int DisplayItemsCounter = 100;
 
@@ -26,21 +27,17 @@ namespace AdvancedDataGridViewSample
         private const int MemoryTestFormsNum = 100;
         private bool _memorytest = false;
         private object[][] _inrows = new object[][] { };
-        private Timer _memorytestclosetimer = new Timer
-        {
-            Interval = 100
-        };
-
-        private Timer _timermemoryusage = new Timer
-        {
-            Interval = 2000
-        };
+        private Timer _memorytestclosetimer;
+        private Timer _timermemoryusage;
 
         private static bool CollectGarbageOnTimerMemoryUsageUpdate = true;
 
         public FormMain()
         {
             InitializeComponent();
+
+            _memorytestclosetimer = new Timer(components) { Interval = 10 };
+            _timermemoryusage = new Timer(components) { Interval = 2000 };
 
             //trigger the memory usage show
             _timermemoryusage_Tick(null, null);
@@ -103,6 +100,23 @@ namespace AdvancedDataGridViewSample
         {
             _memorytest = memorytest;
             _inrows = inrows;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            _closing = true;
+            _memorytestclosetimer.Stop();
+            _timermemoryusage.Stop();
+            base.OnFormClosing(e);            
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            (comboBox_filtersaved.DataSource as IDisposable)?.Dispose();
+            comboBox_filtersaved.DataSource = null;
+            (comboBox_sortsaved.DataSource as IDisposable)?.Dispose();
+            comboBox_sortsaved.DataSource = null;
         }
 
         private void button_load_Click(object sender, EventArgs e)
@@ -245,10 +259,14 @@ namespace AdvancedDataGridViewSample
         private void button_savefilters_Click(object sender, EventArgs e)
         {
             _filtersaved.Add((comboBox_filtersaved.Items.Count - 1) + 1, advancedDataGridView_main.FilterString);
+            var oldf = comboBox_filtersaved.DataSource as IDisposable;
             comboBox_filtersaved.DataSource = new BindingSource(_filtersaved, null);
+            oldf?.Dispose();
             comboBox_filtersaved.SelectedIndex = comboBox_filtersaved.Items.Count - 1;
             _sortsaved.Add((comboBox_sortsaved.Items.Count - 1) + 1, advancedDataGridView_main.SortString);
+            oldf = comboBox_sortsaved.DataSource as IDisposable;
             comboBox_sortsaved.DataSource = new BindingSource(_sortsaved, null);
+            oldf?.Dispose();
             comboBox_sortsaved.SelectedIndex = comboBox_sortsaved.Items.Count - 1;
         }
 
@@ -309,12 +327,18 @@ namespace AdvancedDataGridViewSample
         private void _timermemoryusage_Tick(object sender, EventArgs e)
         {
             if (CollectGarbageOnTimerMemoryUsageUpdate)
+            {
                 GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
             toolStripStatusLabel_memory.Text = String.Format("Memory Usage: {0}Mb", GC.GetTotalMemory(false) / (1024 * 1024));
         }
 
         private void button_memorytest_Click(object sender, EventArgs e)
         {
+            button_memorytest.Enabled = false;
+
             //build random data
             Random r = new Random();
             Image[] sampleimages = new Image[2];
@@ -343,20 +367,21 @@ namespace AdvancedDataGridViewSample
             //show the forms
             for (int i = 0; i < MemoryTestFormsNum; i++)
             {
+                if (_closing)
+                    return;
+
                 FormMain formtest = new FormMain(true, testrows);
                 formtest.Show();
-                //wait for the form to be disposed
-                while (!formtest.IsDisposed)
-                {
-                    Application.DoEvents();
-                    System.Threading.Thread.Sleep(100);
-                }
+                Application.DoEvents();
             }
+            button_memorytest.Enabled = true;
         }
 
         private void _memorytestclosetimer_Tick(object sender, EventArgs e)
         {
-            this.Close();
+            _memorytestclosetimer.Stop();
+            if(!_closing)
+                this.Close();
         }
     }
 }
