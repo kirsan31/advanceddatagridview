@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows;net40</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows;net472</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -33,6 +33,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" Condition="'$(TargetFramework)' == 'net40'" />
+    <Reference Include="System.Configuration" Condition="'$(TargetFramework)' == 'net472'" />
   </ItemGroup>  
 </Project>

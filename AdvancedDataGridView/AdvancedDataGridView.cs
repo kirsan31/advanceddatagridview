@@ -246,7 +246,7 @@ namespace Zuby.ADGV
                 try
                 {
                     string jsontext = File.ReadAllText(filename);
-#if NET40
+#if NETFRAMEWORK
                     Dictionary<string, string> translations = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Dictionary<string, string>>(jsontext);
 #else
                     Dictionary<string, string> translations = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsontext);
