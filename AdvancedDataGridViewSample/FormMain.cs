@@ -370,7 +370,7 @@ namespace AdvancedDataGridViewSample
                 if (_closing)
                     return;
 
-                FormMain formtest = new FormMain(true, testrows);
+                FormMain formtest = new FormMain(true, testrows) { ShowInTaskbar = false };
                 formtest.Show();
                 Application.DoEvents();
             }
