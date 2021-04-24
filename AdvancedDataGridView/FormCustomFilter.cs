@@ -31,13 +31,13 @@ namespace Zuby.ADGV
         }
 
         private FilterType _filterType = FilterType.Unknown;
-        private Control _valControl1 = null;
-        private Control _valControl2 = null;
+        private Control _valControl1;
+        private Control _valControl2;
 
         private bool _filterDateAndTimeEnabled = true;
 
-        private string _filterString = null;
-        private string _filterStringDescription = null;
+        private string _filterString;
+        private string _filterStringDescription;
 
         #endregion
 
@@ -231,17 +231,14 @@ namespace Zuby.ADGV
         /// <param name="control1"></param>
         /// <param name="control2"></param>
         /// <returns></returns>
-        private string BuildCustomFilter(FilterType filterType, bool filterDateAndTimeEnabled, string filterTypeConditionText, Control control1, Control control2)
+        private static string BuildCustomFilter(FilterType filterType, bool filterDateAndTimeEnabled, string filterTypeConditionText, Control control1, Control control2)
         {
-            string filterString = "";
-
             string column = "[{0}] ";
 
             if (filterType == FilterType.Unknown)
                 column = "Convert([{0}], 'System.String') ";
 
-            filterString = column;
-
+            string filterString = column;
             switch (filterType)
             {
                 case FilterType.DateTime:
@@ -342,7 +339,7 @@ namespace Zuby.ADGV
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        private string FormatFilterString(string text)
+        private static string FormatFilterString(string text)
         {
             string result = "";
             string s;
