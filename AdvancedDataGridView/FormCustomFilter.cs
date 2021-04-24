@@ -157,24 +157,24 @@ namespace Zuby.ADGV
             comboBox_filterType.SelectedIndex = 0;
 
             _valControl1.Name = "valControl1";
-            _valControl1.Location = new System.Drawing.Point(20, 66);
+            _valControl1.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             _valControl1.Size = new System.Drawing.Size(166, 20);
             _valControl1.Width = comboBox_filterType.Width - 20;
-            _valControl1.TabIndex = 4;
+            _valControl1.Margin = new Padding(10, 0, 0, 0);
             _valControl1.Visible = true;
             _valControl1.KeyDown += valControl_KeyDown;
 
             _valControl2.Name = "valControl2";
-            _valControl2.Location = new System.Drawing.Point(20, 108);
+            _valControl2.Anchor = AnchorStyles.Left | AnchorStyles.Top;
             _valControl2.Size = new System.Drawing.Size(166, 20);
+            _valControl2.Margin = new Padding(10, 0, 0, 0);
             _valControl2.Width = comboBox_filterType.Width - 20;
-            _valControl2.TabIndex = 5;
             _valControl2.Visible = false;
             _valControl2.VisibleChanged += new EventHandler(valControl2_VisibleChanged);
             _valControl2.KeyDown += valControl_KeyDown;
 
-            Controls.Add(_valControl1);
-            Controls.Add(_valControl2);
+            this.tableLayoutPanel1.Controls.Add(_valControl1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(_valControl2, 0, 2);
 
             errorProvider.SetIconAlignment(_valControl1, ErrorIconAlignment.MiddleRight);
             errorProvider.SetIconPadding(_valControl1, -18);
