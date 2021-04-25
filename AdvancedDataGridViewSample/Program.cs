@@ -24,8 +24,12 @@ namespace AdvancedDataGridViewSample
         [STAThread]
         static void Main()
         {
+#if NETFRAMEWORK
             if (HighDPIEnabled && Environment.OSVersion.Version.Major >= 6)
                 SetProcessDPIAware();
+#else
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+#endif
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -36,10 +40,14 @@ namespace AdvancedDataGridViewSample
                 System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(ConfigurationManager.AppSettings["culture"]);
             }
 
+#if NETFRAMEWORK
             FormMain formMain = new FormMain();
             if (HighDPIEnabled)
                 formMain.AutoScaleMode = AutoScaleMode.Dpi;
             Application.Run(formMain);
+#else
+            Application.Run(new FormMain());
+#endif
         }
     }
 }
