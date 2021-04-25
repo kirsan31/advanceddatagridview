@@ -211,31 +211,23 @@ namespace Zuby.ADGV
             if (_checkListStateImages != null)
                 return _checkListStateImages;
 
-            _checkListStateImages = new System.Windows.Forms.ImageList();
-            Bitmap unCheckImg;
-            Bitmap checkImg;
-            Bitmap mixedImg;
+            _checkListStateImages = new ImageList();
 
             // TreeView and CheckBoxRenderer doesn't respect font scaling :(
             int size = Scale(16, GetScalingFactor(false));
-
+            _checkListStateImages.ImageSize = new Size(size, size);
             using (Bitmap img = new Bitmap(size, size))
             {
                 using (Graphics g = Graphics.FromImage(img))
                 {
                     CheckBoxRenderer.DrawCheckBox(g, new Point(0, 1), System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedNormal);
-                    unCheckImg = (Bitmap)img.Clone();
+                    _checkListStateImages.Images.Add("uncheck", (Bitmap)img.Clone());
                     CheckBoxRenderer.DrawCheckBox(g, new Point(0, 1), System.Windows.Forms.VisualStyles.CheckBoxState.CheckedNormal);
-                    checkImg = (Bitmap)img.Clone();
+                    _checkListStateImages.Images.Add("check", (Bitmap)img.Clone());
                     CheckBoxRenderer.DrawCheckBox(g, new Point(0, 1), System.Windows.Forms.VisualStyles.CheckBoxState.MixedNormal);
-                    mixedImg = (Bitmap)img.Clone();
+                    _checkListStateImages.Images.Add("mixed", (Bitmap)img.Clone());
                 }
             }
-
-            _checkListStateImages.Images.Add("uncheck", unCheckImg);
-            _checkListStateImages.Images.Add("check", checkImg);
-            _checkListStateImages.Images.Add("mixed", mixedImg);
-
             return _checkListStateImages;
         }
 
