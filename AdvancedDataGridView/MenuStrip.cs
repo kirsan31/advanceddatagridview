@@ -65,6 +65,11 @@ namespace Zuby.ADGV
         private bool _checkTextFilterSetByText;
         private bool _checkTextFilterRemoveNodesOnSearch = true;
         private static ImageList _checkListStateImages;
+#if NETFRAMEWORK
+        private const float _defFontSize = 8.25f;
+#else
+        private const float _defFontSize = 9f;
+#endif
 
         #endregion
 
@@ -210,7 +215,10 @@ namespace Zuby.ADGV
             Bitmap checkImg;
             Bitmap mixedImg;
 
-            using (Bitmap img = new Bitmap(16, 16))
+            // TreeView and CheckBoxRenderer doesn't respect font scaling :(
+            int size = Scale(16, GetScalingFactor(false));
+
+            using (Bitmap img = new Bitmap(size, size))
             {
                 using (Graphics g = Graphics.FromImage(img))
                 {
@@ -233,7 +241,7 @@ namespace Zuby.ADGV
         #endregion
 
 
-        #region public events
+#region public events
 
         /// <summary>
         /// The current Sorting in changed
@@ -1708,18 +1716,18 @@ namespace Zuby.ADGV
         /// Get the scaling factor
         /// </summary>
         /// <returns></returns>
-        private float GetScalingFactor()
+        private static float GetScalingFactor(bool IncludeFontScaling = true)
         {
-            float ret = 1;
-            using (Graphics Gscale = this.CreateGraphics())
+            float retDPI = 1;
+            using (Graphics Gscale = Graphics.FromHwnd(IntPtr.Zero))
             {
                 try
                 {
-                    ret = Gscale.DpiX / 96.0F;
+                    retDPI = Gscale.DpiX / 96.0F;
                 }
                 catch { };
             }
-            return ret;
+            return retDPI * (IncludeFontScaling ? DefaultFont.Size / _defFontSize : 1);
         }
 
         /// <summary>
