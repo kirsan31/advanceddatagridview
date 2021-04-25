@@ -85,7 +85,7 @@ namespace Zuby.ADGV
             this.sortASCMenuItem.Size = new System.Drawing.Size(Width - 1, 22);
             this.sortASCMenuItem.Click += new System.EventHandler(SortASCMenuItem_Click);
             this.sortASCMenuItem.MouseEnter += new System.EventHandler(SortASCMenuItem_MouseEnter);
-            this.sortASCMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.sortASCMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.SizeToFit;
             //
             // sortDESCMenuItem
             //
@@ -94,7 +94,7 @@ namespace Zuby.ADGV
             this.sortDESCMenuItem.Size = new System.Drawing.Size(Width - 1, 22);
             this.sortDESCMenuItem.Click += new System.EventHandler(SortDESCMenuItem_Click);
             this.sortDESCMenuItem.MouseEnter += new System.EventHandler(SortDESCMenuItem_MouseEnter);
-            this.sortDESCMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.sortDESCMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.SizeToFit;
             //
             // cancelSortMenuItem
             //
@@ -191,7 +191,7 @@ namespace Zuby.ADGV
             this.customFilterLastFiltersListMenuItem.AutoSize = false;
             this.customFilterLastFiltersListMenuItem.Size = new System.Drawing.Size(Width - 1, 22);
             this.customFilterLastFiltersListMenuItem.Image = Properties.Resources.ColumnHeader_Filtered;
-            this.customFilterLastFiltersListMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.customFilterLastFiltersListMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.SizeToFit;
             this.customFilterLastFiltersListMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             customFilterMenuItem,
             toolStripSeparator2MenuItem,

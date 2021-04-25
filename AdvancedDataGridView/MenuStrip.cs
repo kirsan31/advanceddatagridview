@@ -65,6 +65,7 @@ namespace Zuby.ADGV
         private bool _checkTextFilterSetByText;
         private bool _checkTextFilterRemoveNodesOnSearch = true;
         private static ImageList _checkListStateImages;
+        private static readonly Bitmap _resizeGripImage = Properties.Resources.MenuStrip_ResizeGrip;
 #if NETFRAMEWORK
         private const float _defFontSize = 8.25f;
 #else
@@ -80,8 +81,7 @@ namespace Zuby.ADGV
         /// MenuStrip constructor
         /// </summary>
         /// <param name="dataType"></param>
-        public MenuStrip(Type dataType)
-            : base()
+        public MenuStrip(Type dataType) : base()
         {
             //initialize components
             InitializeComponent();
@@ -152,6 +152,7 @@ namespace Zuby.ADGV
 
             //resize before hitting ResizeBox so the grip works correctly
             float scalingfactor = GetScalingFactor();
+            ImageScalingSize = new Size(Scale(16, scalingfactor), Scale(16, scalingfactor));
             MinimumSize = new Size(Scale(PreferredSize.Width, scalingfactor), Scale(PreferredSize.Height, scalingfactor));
             //once the size is set resize the ones that wont change      
             resizeBoxControlHost.Height = Scale(resizeBoxControlHost.Height, scalingfactor);
@@ -241,7 +242,7 @@ namespace Zuby.ADGV
         #endregion
 
 
-#region public events
+        #region public events
 
         /// <summary>
         /// The current Sorting in changed
@@ -1767,7 +1768,11 @@ namespace Zuby.ADGV
             checkFilterListButtonsControlHost.Size = new Size(Scale(w2 - 35, scalingfactor), Scale(24, scalingfactor));
             button_filter.Location = new Point(Scale(w2 - 35 - 164, scalingfactor), 0);
             button_undofilter.Location = new Point(Scale(w2 - 35 - 79, scalingfactor), 0);
-            resizeBoxControlHost.Margin = new Padding(Scale(w2 - 46, scalingfactor), 0, 0, 0);
+#if NETFRAMEWORK
+            resizeBoxControlHost.Margin = new Padding(Scale(w2 - 47, scalingfactor), 0, 0, 0);
+#else
+            resizeBoxControlHost.Margin = new Padding(Scale(w2 - 47, scalingfactor), Scale(3, scalingfactor), 0, 0);
+#endif
 
             //get all objects height to make sure we have room for the grip
             int finalHeight =
@@ -1910,7 +1915,7 @@ namespace Zuby.ADGV
         /// <param name="e"></param>
         private void ResizeBoxControlHost_Paint(Object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImage(Properties.Resources.MenuStrip_ResizeGrip, 0, 0);
+            e.Graphics.DrawImage(_resizeGripImage, 0, 0, e.ClipRectangle.Width, e.ClipRectangle.Height);
         }
 
         #endregion
