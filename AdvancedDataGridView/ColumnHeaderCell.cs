@@ -29,14 +29,19 @@ namespace Zuby.ADGV
 
         #region class properties
 
+#if NETFRAMEWORK
+        private const int _defFltImgSize = 16;
+#else
+        private const int _defFltImgSize = 18;
+#endif
         private Image _filterImage = Properties.Resources.ColumnHeader_UnFiltered;
-        private Size _filterButtonImageSize = new Size(16, 16);
-        private bool _filterButtonPressed = false;
-        private bool _filterButtonOver = false;
+        private static readonly Size _filterButtonImageSize = new Size(MenuStrip.Scale(_defFltImgSize, MenuStrip.GetScalingFactor()), MenuStrip.Scale(_defFltImgSize, MenuStrip.GetScalingFactor()));
+        private bool _filterButtonPressed;
+        private bool _filterButtonOver;
         private Rectangle _filterButtonOffsetBounds = Rectangle.Empty;
         private Rectangle _filterButtonImageBounds = Rectangle.Empty;
         private Padding _filterButtonMargin = new Padding(3, 4, 3, 4);
-        private bool _filterEnabled = false;
+        private bool _filterEnabled;
 
         private const bool FilterDateAndTimeDefaultEnabled = false;
 
@@ -84,6 +89,16 @@ namespace Zuby.ADGV
 
         #endregion
 
+        private Image FilterImage
+        {
+            get => _filterImage;
+            set
+            {
+                var oldImg = _filterImage;
+                _filterImage = value;
+                oldImg?.Dispose();
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -119,8 +134,7 @@ namespace Zuby.ADGV
                 MenuStrip.SortChanged -= MenuStrip_SortChanged;
                 MenuStrip = null;
             }
-            columnHeaderCell._filterImage = (Image)_filterImage.Clone();
-            columnHeaderCell._filterButtonImageSize = _filterButtonImageSize;
+            columnHeaderCell.FilterImage = (Image)FilterImage.Clone();
             columnHeaderCell._filterButtonPressed = _filterButtonPressed;
             columnHeaderCell._filterButtonOver = _filterButtonOver;
             columnHeaderCell._filterButtonOffsetBounds = _filterButtonOffsetBounds;
@@ -522,33 +536,33 @@ namespace Zuby.ADGV
         }
 
         /// <summary>
-        /// Refrash the Cell image
+        /// Refresh the Cell image
         /// </summary>
         private void RefreshImage()
         {
             if (ActiveFilterType == MenuStrip.FilterType.Loaded)
             {
-                _filterImage = Properties.Resources.ColumnHeader_SavedFilters;
+                FilterImage = Properties.Resources.ColumnHeader_SavedFilters;
             }
             else
             {
                 if (ActiveFilterType == MenuStrip.FilterType.None)
                 {
                     if (ActiveSortType == MenuStrip.SortType.None)
-                        _filterImage = Properties.Resources.ColumnHeader_UnFiltered;
+                        FilterImage = Properties.Resources.ColumnHeader_UnFiltered;
                     else if (ActiveSortType == MenuStrip.SortType.ASC)
-                        _filterImage = Properties.Resources.ColumnHeader_OrderedASC;
+                        FilterImage = Properties.Resources.ColumnHeader_OrderedASC;
                     else
-                        _filterImage = Properties.Resources.ColumnHeader_OrderedDESC;
+                        FilterImage = Properties.Resources.ColumnHeader_OrderedDESC;
                 }
                 else
                 {
                     if (ActiveSortType == MenuStrip.SortType.None)
-                        _filterImage = Properties.Resources.ColumnHeader_Filtered;
+                        FilterImage = Properties.Resources.ColumnHeader_Filtered;
                     else if (ActiveSortType == MenuStrip.SortType.ASC)
-                        _filterImage = Properties.Resources.ColumnHeader_FilteredAndOrderedASC;
+                        FilterImage = Properties.Resources.ColumnHeader_FilteredAndOrderedASC;
                     else
-                        _filterImage = Properties.Resources.ColumnHeader_FilteredAndOrderedDESC;
+                        FilterImage = Properties.Resources.ColumnHeader_FilteredAndOrderedDESC;
                 }
             }
         }
@@ -602,7 +616,7 @@ namespace Zuby.ADGV
                     buttonBounds.Inflate(-1, -1);
                     using (Brush b = new SolidBrush(_filterButtonOver ? Color.WhiteSmoke : Color.White))
                         graphics.FillRectangle(b, buttonBounds);
-                    graphics.DrawImage(_filterImage, buttonBounds);
+                    graphics.DrawImage(FilterImage, buttonBounds);
                 }
             }
         }

@@ -1717,7 +1717,7 @@ namespace Zuby.ADGV
         /// Get the scaling factor
         /// </summary>
         /// <returns></returns>
-        private static float GetScalingFactor(bool IncludeFontScaling = true)
+        internal static float GetScalingFactor(bool IncludeFontScaling = true)
         {
             float retDPI = 1;
             using (Graphics Gscale = Graphics.FromHwnd(IntPtr.Zero))
@@ -1737,7 +1737,7 @@ namespace Zuby.ADGV
         /// <param name="dimesion"></param>
         /// <param name="factor"></param>
         /// <returns></returns>
-        private static int Scale(int dimesion, float factor)
+        internal static int Scale(int dimesion, float factor)
         {
             return (int)Math.Floor(dimesion * factor);
         }
