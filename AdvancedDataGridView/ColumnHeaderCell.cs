@@ -57,6 +57,8 @@ namespace Zuby.ADGV
         /// <param name="filterEnabled"></param>
         public ColumnHeaderCell(DataGridViewColumnHeaderCell oldCell, bool filterEnabled) : base()
         {
+            System.Diagnostics.Debug.Assert(oldCell is not ColumnHeaderCell, $"oldCell is {nameof(ColumnHeaderCell)} in {nameof(ColumnHeaderCell)} constructor!");
+
             // Below, We will lost State and DataGridView.KeyboardToolTip :(
             Tag = oldCell.Tag;
             ErrorText = oldCell.ErrorText;
