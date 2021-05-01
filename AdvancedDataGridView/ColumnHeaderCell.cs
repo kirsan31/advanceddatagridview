@@ -36,11 +36,12 @@ namespace Zuby.ADGV
 #endif
         private Image _filterImage = Properties.Resources.ColumnHeader_UnFiltered;
         private static readonly Size _filterButtonImageSize = new Size(MenuStrip.Scale(_defFltImgSize, MenuStrip.GetScalingFactor()), MenuStrip.Scale(_defFltImgSize, MenuStrip.GetScalingFactor()));
+        private int _filterButtonSortNumWidth;
         private bool _filterButtonPressed;
         private bool _filterButtonOver;
-        private Rectangle _filterButtonOffsetBounds = Rectangle.Empty;
         private Rectangle _filterButtonImageBounds = Rectangle.Empty;
-        private Padding _filterButtonMargin = new Padding(3, 4, 3, 4);
+        private static readonly Padding _filterButtonMargin = new Padding(3, 4, 3, 4);
+        private Font _sortNumFont;
         private bool _filterEnabled;
 
         private const bool FilterDateAndTimeDefaultEnabled = false;
@@ -75,6 +76,7 @@ namespace Zuby.ADGV
             MenuStrip.FilterChanged += new EventHandler(MenuStrip_FilterChanged);
             MenuStrip.SortChanged += new EventHandler(MenuStrip_SortChanged);
 
+            _sortNumFont = new Font(oldCell.InheritedStyle.Font.FontFamily, oldCell.InheritedStyle.Font.Size * 0.85f);
             _filterEnabled = filterEnabled;
             IsFilterDateAndTimeEnabled = FilterDateAndTimeDefaultEnabled;
             IsSortEnabled = true;
@@ -106,6 +108,7 @@ namespace Zuby.ADGV
             if (disposing)
             {
                 _filterImage?.Dispose();
+                _sortNumFont?.Dispose();
                 if (MenuStrip != null)
                 {
                     MenuStrip.FilterChanged -= MenuStrip_FilterChanged;
@@ -139,10 +142,10 @@ namespace Zuby.ADGV
             columnHeaderCell.FilterImage = (Image)FilterImage.Clone();
             columnHeaderCell._filterButtonPressed = _filterButtonPressed;
             columnHeaderCell._filterButtonOver = _filterButtonOver;
-            columnHeaderCell._filterButtonOffsetBounds = _filterButtonOffsetBounds;
             columnHeaderCell._filterButtonImageBounds = _filterButtonImageBounds;
-            columnHeaderCell._filterButtonMargin = _filterButtonMargin;
+            columnHeaderCell._filterButtonSortNumWidth = _filterButtonSortNumWidth;
             columnHeaderCell._filterEnabled = _filterEnabled;
+            columnHeaderCell._sortNumFont = (Font)_sortNumFont.Clone();
             return columnHeaderCell;
         }
 
@@ -315,7 +318,7 @@ namespace Zuby.ADGV
         {
             get
             {
-                return new Size(_filterButtonImageSize.Width + _filterButtonMargin.Left + _filterButtonMargin.Right,
+                return new Size(_filterButtonImageSize.Width + _filterButtonMargin.Left + _filterButtonMargin.Right + _filterButtonSortNumWidth,
                     _filterButtonImageSize.Height + _filterButtonMargin.Bottom + _filterButtonMargin.Top);
             }
         }
@@ -609,16 +612,19 @@ namespace Zuby.ADGV
 
             if (FilterAndSortEnabled && paintParts.HasFlag(DataGridViewPaintParts.ContentBackground))
             {
-                _filterButtonOffsetBounds = GetFilterBounds(true);
+                int SortNum = (DataGridView as AdvancedDataGridView).GetSortNum(OwningColumn.Name) + 1;
+                _filterButtonSortNumWidth = SortNum > 0 ? (int)(graphics.MeasureString(SortNum.ToString(), _sortNumFont).Width + 0.5) : 0;
+                Rectangle buttonBounds = GetFilterBounds(true);
                 _filterButtonImageBounds = GetFilterBounds(false);
-                Rectangle buttonBounds = _filterButtonOffsetBounds;
                 if (clipBounds.IntersectsWith(buttonBounds))
                 {
                     ControlPaint.DrawBorder(graphics, buttonBounds, Color.Gray, ButtonBorderStyle.Solid);
                     buttonBounds.Inflate(-1, -1);
                     using (Brush b = new SolidBrush(_filterButtonOver ? Color.WhiteSmoke : Color.White))
                         graphics.FillRectangle(b, buttonBounds);
-                    graphics.DrawImage(FilterImage, buttonBounds);
+                    graphics.DrawImage(FilterImage, buttonBounds.X, buttonBounds.Y, buttonBounds.Width - _filterButtonSortNumWidth, buttonBounds.Height);
+                    if (SortNum > 0)
+                        graphics.DrawString(SortNum.ToString(), _sortNumFont, Brushes.Black, buttonBounds.X + buttonBounds.Width - _filterButtonSortNumWidth, buttonBounds.Y);
                 }
             }
         }
@@ -628,15 +634,15 @@ namespace Zuby.ADGV
         /// </summary>
         /// <param name="withOffset"></param>
         /// <returns></returns>
-        private Rectangle GetFilterBounds(bool withOffset = true)
+        private Rectangle GetFilterBounds(bool withOffset)
         {
             Rectangle cell = DataGridView.GetCellDisplayRectangle(ColumnIndex, -1, false);
 
             Point p = new Point(
-                (withOffset ? cell.Right : cell.Width) - _filterButtonImageSize.Width - _filterButtonMargin.Right,
+                (withOffset ? cell.Right : cell.Width) - _filterButtonImageSize.Width - _filterButtonMargin.Right - _filterButtonSortNumWidth,
                 (withOffset ? cell.Bottom : cell.Height) - _filterButtonImageSize.Height - _filterButtonMargin.Bottom);
 
-            return new Rectangle(p, _filterButtonImageSize);
+            return new Rectangle(p.X, p.Y, _filterButtonImageSize.Width + _filterButtonSortNumWidth, _filterButtonImageSize.Height);
         }
 
         #endregion

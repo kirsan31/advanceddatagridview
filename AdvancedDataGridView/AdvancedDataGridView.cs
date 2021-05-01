@@ -202,6 +202,16 @@ namespace Zuby.ADGV
 
         #endregion
 
+        /// <summary>
+        /// Return sorting order number of column (from zero). -1 if no sort on this column.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal int GetSortNum(string name)
+        {
+            return _sortOrderList.IndexOf(name);
+        }
+
 
         #region translations methods
 
