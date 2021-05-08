@@ -44,7 +44,7 @@ namespace Zuby.ADGV
             this.customFilterLastFilter4MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.customFilterLastFilter5MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3MenuItem = new System.Windows.Forms.ToolStripSeparator();
-            this.checkList = new System.Windows.Forms.TreeView();
+            this.checkList = new TreeViewEx();
             this.button_filter = new System.Windows.Forms.Button();
             this.button_undofilter = new System.Windows.Forms.Button();
             this.checkFilterListPanel = new System.Windows.Forms.Panel();
@@ -336,7 +336,7 @@ namespace Zuby.ADGV
         private System.Windows.Forms.ToolStripMenuItem customFilterLastFilter3MenuItem;
         private System.Windows.Forms.ToolStripMenuItem customFilterLastFilter4MenuItem;
         private System.Windows.Forms.ToolStripMenuItem customFilterLastFilter5MenuItem;
-        private System.Windows.Forms.TreeView checkList;
+        private TreeViewEx checkList;
         private System.Windows.Forms.Button button_filter;
         private System.Windows.Forms.Button button_undofilter;
         private System.Windows.Forms.ToolStripControlHost checkFilterListControlHost;
