@@ -178,7 +178,7 @@ namespace AdvancedDataGridViewSample
                         i % 2 == 0 ? true:false,
                         Guid.NewGuid(),
                         sampleimages[r.Next(0, 2)],
-                        TimeSpan.FromDays(3).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes)))
+                        TimeSpan.FromDays(i).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes)))
                     };
 
                     _dataTable.Rows.Add(newrow);
@@ -194,7 +194,7 @@ namespace AdvancedDataGridViewSample
                         i % 2 == 0 ? true:false,
                         Guid.NewGuid(),
                         sampleimages[r.Next(0, 2)],
-                        TimeSpan.FromDays(3).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes))).Add(TimeSpan.FromTicks(1))
+                        TimeSpan.FromDays(i).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes))).Add(TimeSpan.FromTicks(1))
                     };
 
                     _dataTable.Rows.Add(newrow);

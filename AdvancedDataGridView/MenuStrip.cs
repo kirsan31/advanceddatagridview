@@ -894,7 +894,7 @@ namespace Zuby.ADGV
 
                                         foreach (var hour in hours)
                                         {
-                                            TreeNodeItemSelector hoursnode = daysnode.CreateChildNode(hour.Key.ToString("D2") + " " + "h", hour.Key);
+                                            TreeNodeItemSelector hoursnode = daysnode.CreateChildNode(hour.Key.ToString("D2") + " h", hour.Key);
 
                                             var mins =
                                                 from min in hour
@@ -904,7 +904,7 @@ namespace Zuby.ADGV
 
                                             foreach (var min in mins)
                                             {
-                                                TreeNodeItemSelector minsnode = hoursnode.CreateChildNode(min.Key.ToString("D2") + " " + "m", min.Key);
+                                                TreeNodeItemSelector minsnode = hoursnode.CreateChildNode(min.Key.ToString("D2") + " m", min.Key);
 
                                                 var secs =
                                                     from sec in min
@@ -914,7 +914,7 @@ namespace Zuby.ADGV
 
                                                 foreach (var sec in secs)
                                                 {
-                                                    TreeNodeItemSelector secsnode = minsnode.CreateChildNode(sec.Key.ToString("D2") + " " + "s", sec.First().Value);
+                                                    TreeNodeItemSelector secsnode = minsnode.CreateChildNode(sec.Key.ToString("D2") + " s", sec.Key);
                                                     foreach (var dtm in sec.GroupBy(s => (DateTime)s.Value))
                                                         secsnode.CreateChildNode(dtm.Key.ToString("fffffff"), dtm.Key);
                                                 }
@@ -937,7 +937,7 @@ namespace Zuby.ADGV
 
                         foreach (var day in days)
                         {
-                            TreeNodeItemSelector daysnode = TreeNodeItemSelector.CreateNode(day.Key.ToString("D2"), day.Key, CheckState.Checked, TreeNodeItemSelector.CustomNodeType.DateTimeNode);
+                            TreeNodeItemSelector daysnode = TreeNodeItemSelector.CreateNode(day.Key.ToString("D2") + " d", day.Key, CheckState.Checked, TreeNodeItemSelector.CustomNodeType.DateTimeNode);
                             checkList.Nodes.Add(daysnode);
 
                             var hours =
@@ -948,7 +948,7 @@ namespace Zuby.ADGV
 
                             foreach (var hour in hours)
                             {
-                                TreeNodeItemSelector hoursnode = daysnode.CreateChildNode(hour.Key.ToString("D2") + " " + "h", hour.Key);
+                                TreeNodeItemSelector hoursnode = daysnode.CreateChildNode(hour.Key.ToString("D2") + " h", hour.Key);
 
                                 var mins =
                                     from min in hour
@@ -958,7 +958,7 @@ namespace Zuby.ADGV
 
                                 foreach (var min in mins)
                                 {
-                                    TreeNodeItemSelector minsnode = hoursnode.CreateChildNode(min.Key.ToString("D2") + " " + "m", min.Key);
+                                    TreeNodeItemSelector minsnode = hoursnode.CreateChildNode(min.Key.ToString("D2") + " m", min.Key);
 
                                     var secs =
                                         from sec in min
@@ -968,9 +968,9 @@ namespace Zuby.ADGV
 
                                     foreach (var sec in secs)
                                     {
-                                        TreeNodeItemSelector secsnode = minsnode.CreateChildNode(sec.Key.ToString("D2") + " " + "s", sec.First().Value);
-                                        foreach (var dtm in sec.GroupBy(s => (TimeSpan)s.Value))
-                                            secsnode.CreateChildNode(dtm.Key.ToString("fffffff"), dtm.Key);
+                                        TreeNodeItemSelector secsnode = minsnode.CreateChildNode(sec.Key.ToString("D2") + " s", sec.Key);
+                                        foreach (var ts in sec.GroupBy(s => (TimeSpan)s.Value))
+                                            secsnode.CreateChildNode(ts.Key.ToString("fffffff"), ts.Key);
                                     }
                                 }
                             }
