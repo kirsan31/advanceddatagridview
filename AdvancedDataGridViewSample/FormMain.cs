@@ -11,22 +11,29 @@ namespace AdvancedDataGridViewSample
 {
     public partial class FormMain : Form
     {
-        private DataTable _dataTable = null;
-        private DataSet _dataSet = null;
+        private DataTable _dataTable;
+        private DataSet _dataSet;
 
         private SortedDictionary<int, string> _filtersaved = new SortedDictionary<int, string>();
         private SortedDictionary<int, string> _sortsaved = new SortedDictionary<int, string>();
 
-        private bool _testtranslations = false;
-        private bool _testtranslationsFromFile = false;
+        private bool _testtranslations;
+        private bool _testtranslationsFromFile;
         private bool _closing;
 
-        private static int DisplayItemsCounter = 100;
+        /// <summary>
+        /// Initial item count = <see cref="_DisplayItemsCycleCounter"/> * 3
+        /// </summary>
+        private static int _DisplayItemsCycleCounter = 4_000;
+        /// <summary>
+        /// Added item count = <see cref="_DisplayItemsCycleCounter"/> * 3
+        /// </summary>
+        private static int _AddIttemsCycleCounter = 1_000;
 
         private static bool MemoryTestEnabled = true;
         private const int MemoryTestFormsNum = 100;
-        private bool _memorytest = false;
-        private object[][] _inrows = new object[][] { };
+        private bool _memorytest;
+        private object[][] _inrows = Array.Empty<object[]>();
         private Timer _memorytestclosetimer;
         private Timer _timermemoryusage;
 
@@ -93,6 +100,8 @@ namespace AdvancedDataGridViewSample
 
             //set bindingsource
             SetTestData();
+
+//            advancedDataGridView_main.SetMenuStripFilterNOTINLogic(true);
         }
 
         public FormMain(bool memorytest, object[][] inrows)
@@ -122,7 +131,7 @@ namespace AdvancedDataGridViewSample
         private void button_load_Click(object sender, EventArgs e)
         {
             //add test data to bindsource
-            AddTestData();
+            AddTestData(false);
         }
 
         private void SetTestData()
@@ -144,7 +153,7 @@ namespace AdvancedDataGridViewSample
             advancedDataGridViewSearchToolBar_main.SetColumns(advancedDataGridView_main.Columns);
         }
 
-        private void AddTestData()
+        private void AddTestData(bool Init)
         {
             Random r = new Random();
             Image[] sampleimages = new Image[2];
@@ -155,19 +164,37 @@ namespace AdvancedDataGridViewSample
 
             if (_inrows.Length == 0)
             {
-                for (int i = 0; i < DisplayItemsCounter; i++)
+                var cnt = Init ? _DisplayItemsCycleCounter : _AddIttemsCycleCounter;
+                for (int i = 0; i < cnt; i++)
                 {
+                    var dtm = DateTime.Today.AddHours(i * 2).AddHours(i % 2 == 0 ? i * 10 + 1 : 0).AddMinutes(i % 2 == 0 ? i * 10 + 1 : 0).AddSeconds(i % 2 == 0 ? i * 10 + 1 : 0).AddMilliseconds(i % 2 == 0 ? i * 10 + 1 : 0);
                     object[] newrow = new object[] {
                         i,
                         Math.Round((decimal)i*2/3, 6),
                         Math.Round(i % 2 == 0 ? (double)i*2/3 : (double)i/2, 6),
-                        DateTime.Today.AddHours(i*2).AddHours(i%2 == 0 ?i*10+1:0).AddMinutes(i%2 == 0 ?i*10+1:0).AddSeconds(i%2 == 0 ?i*10+1:0).AddMilliseconds(i%2 == 0 ?i*10+1:0).Date,
-                        DateTime.Today.AddHours(i*2).AddHours(i%2 == 0 ?i*10+1:0).AddMinutes(i%2 == 0 ?i*10+1:0).AddSeconds(i%2 == 0 ?i*10+1:0).AddMilliseconds(i%2 == 0 ?i*10+1:0),
+                        dtm.Date,
+                        dtm,
                         i*2 % 3 == 0 ? null : i.ToString()+" str",
                         i % 2 == 0 ? true:false,
                         Guid.NewGuid(),
                         sampleimages[r.Next(0, 2)],
-                        TimeSpan.FromHours(10).Add(TimeSpan.FromMinutes(r.Next(maxMinutes)))
+                        TimeSpan.FromDays(3).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes)))
+                    };
+
+                    _dataTable.Rows.Add(newrow);
+                    _dataTable.Rows.Add(newrow);
+
+                    newrow = new object[] {
+                        i,
+                        Math.Round((decimal)i*2/3, 6),
+                        Math.Round(i % 2 == 0 ? (double)i*2/3 : (double)i/2, 6),
+                        dtm.Date,
+                        dtm.AddTicks(1),
+                        i*2 % 3 == 0 ? null : i.ToString()+" str",
+                        i % 2 == 0 ? true:false,
+                        Guid.NewGuid(),
+                        sampleimages[r.Next(0, 2)],
+                        TimeSpan.FromDays(3).Add(TimeSpan.FromHours(10)).Add(TimeSpan.FromMinutes(r.Next(maxMinutes))).Add(TimeSpan.FromTicks(1))
                     };
 
                     _dataTable.Rows.Add(newrow);
@@ -186,7 +213,7 @@ namespace AdvancedDataGridViewSample
         private void FormMain_Load(object sender, EventArgs e)
         {
             //add test data to bindsource
-            AddTestData();
+            AddTestData(true);
 
             //setup datagridview
             advancedDataGridView_main.DisableFilterAndSort(advancedDataGridView_main.Columns["int"]);
