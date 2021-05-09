@@ -691,7 +691,7 @@ namespace Zuby.ADGV
                             if (DataType == typeof(bool))
                                 FilterString += "[{0}] =" + filter;
                             else if (DataType == typeof(int) || DataType == typeof(long) || DataType == typeof(short) || DataType == typeof(uint) || DataType == typeof(ulong) || DataType == typeof(ushort) ||
-                                DataType == typeof(decimal) || DataType == typeof(DateTime) || DataType == typeof(byte) || DataType == typeof(sbyte) || DataType == typeof(string))
+                                DataType == typeof(float) || DataType == typeof(double) || DataType == typeof(decimal) || DataType == typeof(DateTime) || DataType == typeof(byte) || DataType == typeof(sbyte) || DataType == typeof(string))
                             {
                                 if (IsFilterNOTINLogicEnabled)
                                     FilterString += "[{0}] NOT IN (" + filter + ")";
@@ -700,7 +700,7 @@ namespace Zuby.ADGV
                             }
                             else if (DataType == typeof(Bitmap))
                             { }
-                            else // TimeSpan, Double...
+                            else // TimeSpan, Guid
                             {
                                 if (IsFilterNOTINLogicEnabled)
                                     FilterString += "Convert([{0}],System.String) NOT IN (" + filter + ")";
@@ -778,21 +778,15 @@ namespace Zuby.ADGV
                         break;
                     }
                 }
-                else if (DataType == typeof(int) || DataType == typeof(long) || DataType == typeof(short) ||
-                    DataType == typeof(uint) || DataType == typeof(ulong) || DataType == typeof(ushort) ||
-                    DataType == typeof(byte) || DataType == typeof(sbyte))
+                else if (DataType == typeof(int) || DataType == typeof(long) || DataType == typeof(short) || DataType == typeof(uint) || DataType == typeof(ulong) || DataType == typeof(ushort) ||
+                    DataType == typeof(byte) || DataType == typeof(sbyte) || DataType == typeof(float) || DataType == typeof(double) || DataType == typeof(decimal))
                 {
                     foreach (TreeNodeItemSelector n in nodes)
-                        sb.Append(n.Value.ToString() + appx);
-                }
-                else if (DataType == typeof(float) || DataType == typeof(double) || DataType == typeof(decimal))
-                {
-                    foreach (TreeNodeItemSelector n in nodes)
-                        sb.Append(n.Value.ToString().Replace(",", ".") + appx);
+                        sb.Append(Convert.ToString(n.Value, CultureInfo.InvariantCulture.NumberFormat) + appx);
                 }
                 else if (DataType == typeof(Bitmap))
                 { }
-                else
+                else // string, Guid
                 {
                     foreach (TreeNodeItemSelector n in nodes)
                         sb.Append("'" + FormatFilterString(n.Value.ToString()) + "'" + appx);
