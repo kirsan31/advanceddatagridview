@@ -350,10 +350,10 @@ namespace Zuby.ADGV
             IsFilterEnabled = enabled;
 
             cancelFilterMenuItem.Enabled = enabled;
-            customFilterLastFiltersListMenuItem.Enabled = (enabled ? DataType != typeof(bool) : false);
+            customFilterLastFiltersListMenuItem.Enabled = enabled && DataType != typeof(bool);
             button_filter.Enabled = enabled;
             button_undofilter.Enabled = enabled;
-            checkList.Enabled = enabled;
+            checkList.Enabled = enabled && IsFilterChecklistEnabled;
             checkTextFilter.Enabled = enabled;
         }
 
